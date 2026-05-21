@@ -26,6 +26,7 @@ app.get("/api/struk", async (req, res) => {
     const history = await Struk.find().sort({ createdAt: -1 });
     res.json(history);
   } catch (error) {
+    console.error("❌ Error saat GET /api/struk:", error);
     res
       .status(500)
       .json({ message: "Gagal mengambil data riwayat", error: error.message });
@@ -36,6 +37,13 @@ app.get("/api/struk", async (req, res) => {
 app.post("/api/struk", async (req, res) => {
   try {
     const { klien, layanan, totalHarga, status } = req.body;
+
+    // Validasi input
+    if (!klien || !layanan || !totalHarga || !status) {
+      return res.status(400).json({
+        message: "Data tidak lengkap! Pastikan semua field terisi.",
+      });
+    }
 
     // Logika membuat nomor nota otomatis (Contoh: GM-001, GM-002)
     const totalStruk = await Struk.countDocuments();
@@ -61,6 +69,7 @@ app.post("/api/struk", async (req, res) => {
     // Kirim balasan sukses ke frontend
     res.status(201).json(strukTersimpan);
   } catch (error) {
+    console.error("❌ Error saat POST /api/struk:", error);
     res
       .status(400)
       .json({ message: "Gagal membuat struk baru", error: error.message });
