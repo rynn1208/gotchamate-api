@@ -69,6 +69,14 @@ app.post("/api/struk", async (req, res) => {
 
 // Jalankan Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server menyala di http://localhost:${PORT}`);
-});
+// === KODE UNTUK MENYALAKAN SERVER ===
+// Kalau dijalankan di komputer (local), tetap pakai app.listen
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`✅ Server berjalan di http://localhost:${PORT}`);
+  });
+}
+
+// Kalau dijalankan di Vercel, export app agar dibaca sebagai Serverless Function
+module.exports = app;
