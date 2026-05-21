@@ -7,9 +7,9 @@ const cors = require("cors");
 const Struk = require("./models/Struk");
 
 const app = express();
+app.use(express.json());
 
 app.use(cors());
-app.use(express.json());
 
 // === KONEKSI KE MONGODB ===
 mongoose
@@ -35,23 +35,23 @@ app.get("/api/struk", async (req, res) => {
 // 2. POST: Menyimpan struk baru dari form React
 app.post("/api/struk", async (req, res) => {
   try {
-    const { nama, tugas, harga, status } = req.body;
+    const { klien, layanan, totalHarga, status } = req.body;
 
-    // Logika membuat nomor nota otomatis (Contoh: GM-0001, GM-0002)
+    // Logika membuat nomor nota otomatis (Contoh: GM-001, GM-002)
     const totalStruk = await Struk.countDocuments();
     const urutanBerikutnya = totalStruk + 1;
-    const nomorNotaOtomatis = `GM-${String(urutanBerikutnya).padStart(4, "0")}`;
+    const nomorNotaOtomatis = `GM-${String(urutanBerikutnya).padStart(3, "0")}`;
 
-    // Membuat tanggal hari ini (Format Indonesia)
-    const tanggalHariIni = new Date().toLocaleDateString("id-ID");
+    // Menyimpan tanggal dalam format ISO agar bisa di-parse di frontend
+    const tanggalHariIni = new Date().toISOString().split("T")[0];
 
     // Menyusun data sebelum dimasukkan ke database
     const strukBaru = new Struk({
       nota: nomorNotaOtomatis,
       tanggal: tanggalHariIni,
-      nama: nama,
-      tugas: tugas,
-      harga: Number(harga), // Pastikan harga disimpan sebagai angka
+      klien: klien,
+      layanan: layanan,
+      totalHarga: Number(totalHarga), // Pastikan totalHarga disimpan sebagai angka
       status: status,
     });
 
